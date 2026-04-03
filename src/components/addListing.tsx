@@ -3,9 +3,12 @@ import { useState } from 'react';
 import { addListing } from '../firebase/database';
 import { Listing } from '../types';
 
+interface AddListingProps {
+  onSuccess: () => void;
+}
 const PLACEHOLDER_IMAGE = 'https://placehold.co/400x300?text=No+Image';
 
-const AddListing = () => {
+const AddListing = ({ onSuccess }: AddListingProps) => {
   const [image, setImage] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -15,6 +18,17 @@ const AddListing = () => {
   const [location, setLocation] = useState<string>('');
   const [deliveryMethod, setDeliveryMethod] = useState<string>('pickup');
   const [message, setMessage] = useState<string>('');
+
+  const resetForm = () => {
+    setImage('');
+    setTitle('');
+    setDescription('');
+    setFurnitureType('tables');
+    setPrice(0);
+    setCondition('new');
+    setLocation('');
+    setDeliveryMethod('pickup');
+  };
 
   const handleSubmit = async () => {
     const listing: Listing = {
@@ -33,6 +47,8 @@ const AddListing = () => {
     const res = await addListing(listing);
     if (res.status === 200) {
       setMessage(`✅ Listing added! Key: ${res.message}`);
+      onSuccess();
+      resetForm();
     } else {
       setMessage(`❌ Error: ${res.message}`);
     }
